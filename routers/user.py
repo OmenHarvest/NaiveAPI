@@ -42,7 +42,7 @@ def delete_user_by_login(login:str, session:Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return "success"
 
-@role.get("/{login}/export", response_model=UserExportResponse)
+@role.get("/{login}", response_model=UserExportResponse)
 def get_connection_data_by_login(login: str, session: Session = Depends(get_session)):
     result = export_user_from_service(login=login, session=session)
     if result is None:

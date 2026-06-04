@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class ConfigResponse(BaseModel):
+class ParameterResponse(BaseModel):
     id: int
     block: str
     parameter: str
@@ -9,7 +9,7 @@ class ConfigResponse(BaseModel):
 
     model_config = {"from_attributes": True}
 
-class ConfigUpdate(BaseModel):
+class ParameterAddOrUpdate(BaseModel):
     block: str
     parameter: str
     value: str
