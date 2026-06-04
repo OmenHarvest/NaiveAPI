@@ -1,11 +1,15 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/service", tags=["service"])
+service = APIRouter(prefix="/service", tags=["service"])
 
-# Status controller
-@router.get("/status")
-def get_status():
-    return {"status": "running"}
+@service.get("/config")
+def get_config():
+    pass
 
-# Caddy editor 
-# Restart controller
+@service.patch("/config")
+def patch_config():
+    pass
+
+@service.post("/config/raw")
+def post_config():
+    pass
