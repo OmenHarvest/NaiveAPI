@@ -23,6 +23,15 @@ services:
     network_mode: host
 ```
 
+## Database
+
+| Database | URL prefix | Driver | Notes |
+|----------|------------|--------|-------|
+| SQLite | `sqlite:///./data.db` | built-in | default, no setup required |
+| PostgreSQL | `postgresql://user:pass@host/db` | `psycopg2-binary` | recommended for production |
+| MySQL | `mysql+pymysql://user:pass@host/db` | `pymysql` | |
+| MariaDB | `mariadb+pymysql://user:pass@host/db` | `pymysql` | |
+
 # 🎯Endpoints
 
 ## Auth

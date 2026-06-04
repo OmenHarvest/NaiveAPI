@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+sqlmodel
+cryptography
+psycopg2-binary
+pymysql
