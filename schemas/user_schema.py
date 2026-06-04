@@ -1,33 +1,27 @@
 import secrets
 import string
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, model_validator
 
 
-def generate_password(v):
-    if not v:
-        alphabet = string.ascii_letters + string.digits
-        return "".join(secrets.choice(alphabet) for _ in range(16))
-    return v
+def generate_password() -> str:
+    alphabet = string.ascii_letters + string.digits
+    return "".join(secrets.choice(alphabet) for _ in range(16))
+
+def generate_login() -> str:
+    return secrets.token_hex(8)
 
 
-class UserCreate(BaseModel):
-    login: str
+class UserCreateOrUpdate(BaseModel):
+    login: str | None = None
     password: str | None = None
 
-    @field_validator("password", mode="before")
-    @classmethod
-    def generate_if_empty(cls, v):
-        return generate_password(v)
-
-
-class UserUpdate(BaseModel):
-    password: str | None = None
-
-    @field_validator("password", mode="before")
-    @classmethod
-    def generate_if_empty(cls, v):
-        return generate_password(v)
-
+    @model_validator(mode="after")
+    def generate_if_empty(self):
+        if not self.password:
+            self.password = generate_password()
+        if not self.login:
+            self.login = generate_login()
+        return self
 
 class UserResponse(BaseModel):
     login: str
@@ -37,7 +31,4 @@ class UserResponse(BaseModel):
 
 class UserExportResponse(BaseModel):
     login: str
-    naive_uri: str
-    https_url: str
-    json_config: dict
-    plain: str
+    password: str

@@ -132,7 +132,7 @@ celerybeat-schedule
 celerybeat.pid
 
 #database
-.db
+*.db
 
 # Redis
 *.rdb
@@ -219,3 +219,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+data.db
