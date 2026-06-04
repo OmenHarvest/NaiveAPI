@@ -1,3 +1,8 @@
+<div align="center">
+  <img width="200" height="200" alt="logo" src="https://github.com/user-attachments/assets/9675e185-d7fb-44b8-9db8-17cb40a42846" />
+</div>
+
+
 # 👋Introduction
 **NaiveAPI** is API Gateway for NaiveProxy based on FastAPI.
 
