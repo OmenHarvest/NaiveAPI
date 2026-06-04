@@ -17,3 +17,30 @@ services:
     restart: unless-stopped
     network_mode: host
 ```
+
+# 🎯Endpoints
+
+## Auth
+| Method | Endpoint              | Description                      |
+| ------ | --------------------- | -------------------------------- |
+| POST   | /auth/login           | Obtain JWT token                 |
+| POST   | /auth/refresh         | Refresh access token             |
+| POST   | /auth/logout          | Revoke token                     |
+
+## User managment
+
+| Method | Endpoint              | Description                      |
+| ------ | --------------------- | -------------------------------- |
+| GET    | /users                | List all users                   |
+| POST   | /users                | Create user                      |
+| PATCH  | /users/{login}        | Update user password             |
+| DELETE | /users/{login}        | Delete user                      |
+| GET    | /users/{login}/export | Get connection links and config  |
+
+## Naive Services
+
+| Method | Endpoint              | Description                      |
+| ------ | --------------------- | -------------------------------- |
+| GET    | /service/config       | Get current Caddy config         |
+| PATCH  | /service/config       | Update a single config parameter |
+| POST   | /service/config/raw   | Apply raw Caddyfile              |
