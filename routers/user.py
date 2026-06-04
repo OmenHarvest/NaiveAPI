@@ -19,6 +19,6 @@ def edit_user_password_by_login(login:str):
 def delete_user_by_login(login:str):
     pass
 
-@role.get("/{login/export}")
+@role.get("/{login}/export")
 def get_connection_data_by_login(login:str):
     pass

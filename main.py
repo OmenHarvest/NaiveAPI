@@ -3,5 +3,5 @@ from routers import service, user
 
 app = FastAPI()
 
-app.include_router(service.router)
-app.include_router(user.router)
+app.include_router(service.service)
+app.include_router(user.role)
