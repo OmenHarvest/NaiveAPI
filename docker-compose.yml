@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./naiveapi/.env
+      - .env
     volumes:
       - ./naiveapi/data.db:/app/data.db
     network_mode: host
