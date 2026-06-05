@@ -57,7 +57,7 @@ def post_config(
 
 
 @service.get("/config/site-header", response_model=list[SiteResponse])
-def get_site_headers(
+def get_site_headers_handler(
     response: Response,
     session: Session = Depends(get_session),
     admin=Depends(current_admin),
@@ -81,7 +81,7 @@ def post_site_headers(
 
 
 @service.patch("/config/site-header", response_model=list[SiteResponse])
-def patch_config(
+def patch_site_headers(
     response: Response,
     headers: list[SiteAddOrUpdate],
     session: Session = Depends(get_session),

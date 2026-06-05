@@ -39,7 +39,6 @@ def create_user(
     session: Session = Depends(get_session),
     admin=Depends(current_admin),
 ):
-    response.status_code = 200
     return create_user_from_service(session, user)
 
 
@@ -61,7 +60,7 @@ def delete_user_by_login(
     deleted = delete_user_by_login_from_service(session=session, login=login)
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")
-    return "success"
+    return Response(status_code=204)
 
 
 @role.get("/{login}", response_model=UserExportResponse)
