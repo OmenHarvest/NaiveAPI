@@ -1,0 +1,12 @@
+services:
+  naiveapi:
+    build: ./naiveapi
+    container_name: naiveapi
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./naiveapi/.env
+    volumes:
+      - ./naiveapi/data.db:/app/data.db
+    network_mode: host
