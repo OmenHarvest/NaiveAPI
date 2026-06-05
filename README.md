@@ -15,7 +15,7 @@ Clone the repository and place it next to your `naive/` folder
 
 Generate the `.env` file:
 
-```
+```bash
 chmod +x env_generator.sh
 ./env_generator.sh
 ```
@@ -39,7 +39,6 @@ docker compose up -d
 API will be available at `http://localhost:8000`.
 
 ## Database
-
 
 | Database | URL prefix | Driver | Notes |
 |----------|------------|--------|-------|
@@ -77,13 +76,13 @@ Authorization: Bearer eyJ...
 
 ## User Management
 
-| Method | Endpoint | Description | Success | Error |
-|--------|----------|-------------|---------|-------|
-| GET | /users | List all users | 200 / 204 | — |
-| POST | /users | Create user | 201 | 409 login taken |
-| PATCH | /users | Update user | 200 | 404 not found |
-| DELETE | /users/{login} | Delete user | 204 | 404 not found |
-| GET | /users/{login} | Get login and decrypted password | 200 | 404 not found |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /users | List all users |
+| POST | /users | Create user |
+| PATCH | /users | Update user |
+| DELETE | /users/{login} | Delete user |
+| GET | /users/{login} | Get login and decrypted password |
 
 
 ## Naive Service
@@ -94,11 +93,12 @@ Authorization: Bearer eyJ...
 > [!NOTE]
 > Available `block` values: `global_parameter`, `forward_proxy_parameter`, `reverse_proxy_header`, `reverse_proxy_parameter`
 
-| Method | Endpoint | Description | Success | Error |
-|--------|----------|-------------|---------|-------|
-| GET | /service/config | Get all config parameters | 200 / 204 | — |
-| POST | /service/config | Create config parameters | 201 | 409 duplicate |
-| PATCH | /service/config | Update config parameters | 200 | 404 not found |
-| GET | /service/config/site-header | Get site domains | 200 / 204 | — |
-| POST | /service/config/site-header | Add site domain | 201 | — |
-| DELETE | /service/config/site-header/{id} | Remove site domain | 204 | 404 not found |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /service/config | Get all config parameters |
+| POST | /service/config | Create config parameters |
+| PATCH | /service/config | Update config parameters |
+| GET | /service/config/site-header | Get site domains |
+| POST | /service/config/site-header | Add site domain |
+| DELETE | /service/config/site-header/{id} | Remove site domain |
+| GET | /service/config/raw | Get generated Caddyfile as plain text |
