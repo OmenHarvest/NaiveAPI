@@ -40,18 +40,20 @@ def get_naive_config(session: Session) -> str:
         )
     ).all()
 
+    if not reverse_proxy_h:
+        raise ValueError("No reverse_proxy_header entries found in config")
     picked_reverse_proxy_h = secrets.choice(reverse_proxy_h)
 
     result = template.safe_substitute(
-        gobal_parameters="\n ".join(f"{p.parameter} {p.value}" for p in global_p),
+        gobal_parameters="\n  ".join(f"{p.parameter} {p.value}" for p in global_p),
         site_headers=", ".join(f"{h.domain}:{h.port}" for h in site_h),
         site_parameters="\n  ".join(f"{p.parameter} {p.value}".strip() for p in site_p),
-        users="\n ".join(f"basic_auth {u.login} {decrypt(u.password)}" for u in users),
-        forward_proxy_parameters="\n ".join(
+        users="\n        ".join(f"basic_auth {u.login} {decrypt(u.password)}" for u in users),
+        forward_proxy_parameters="\n        ".join(
             f"{p.parameter} {p.value}" for p in forward_proxy_p
         ),
         reverse_proxy_header=picked_reverse_proxy_h.value,
-        reverse_proxy_parameters="\n ".join(
+        reverse_proxy_parameters="\n      ".join(
             f"{p.parameter} {p.value}" for p in reverse_proxy_p
         ),
     )

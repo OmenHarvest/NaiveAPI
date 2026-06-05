@@ -9,13 +9,13 @@ from events_bus import listener
 @listener("user.changed")
 @listener("config.changed")
 def reload_caddy(session: Session):
-    caddyfile = get_naive_config(session)
     try:
+        caddyfile = get_naive_config(session)
         response = httpx.post(
             f"{getenv('NAIVE_PROXY', 'http://localhost:2019')}/load",
             content=caddyfile.encode(),
             headers={"Content-Type": "text/caddyfile"},
         )
         response.raise_for_status()
-    except httpx.ConnectError:
+    except (ValueError, httpx.ConnectError, httpx.HTTPStatusError):
         pass
