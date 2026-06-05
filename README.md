@@ -11,15 +11,7 @@
 
 ## Docker Compose
 
-Clone the repository and place it next to your `naive/` folder:
-
-/your/server/
-├── naive/
-│ └── data/
-│ └── Caddyfile
-└── naiveapi/
-├── docker-compose.yml
-└── .env
+Clone the repository and place it next to your `naive/` folder
 
 Generate the `.env` file:
 
