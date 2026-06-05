@@ -1,5 +1,5 @@
-from sqlmodel import Session, select, delete
-from models.caddyfile_model import Caddyfile_parameter
+from sqlmodel import Session, select
+from models.caddyfile_model import CaddyfileParameter
 from models.site_header_model import Header
 
 from schemas.caddyfile_schema import ParameterAddOrUpdate
@@ -11,27 +11,29 @@ import logging
 
 logger = logging.getLogger("uvicorn")
 
-def get_naive_config(session:Session):
-    parameters = session.exec(select(Caddyfile_parameter)).all()
+
+def get_naive_config(session: Session):
+    parameters = session.exec(select(CaddyfileParameter)).all()
     if not parameters:
         return None
-    
+
     return parameters
 
-def patch_naive_config(session: Session, parameters:list[ParameterAddOrUpdate]):
+
+def patch_naive_config(session: Session, parameters: list[ParameterAddOrUpdate]):
 
     targets = []
 
     for parameter in parameters:
-        target = session.get(Caddyfile_parameter, parameter.id)
+        target = session.get(CaddyfileParameter, parameter.id)
         if not target:
             logger.warning(f"Parameter with id {parameter.id} not found, skipping")
-            continue;
+            continue
         target.block = parameter.block
         target.parameter = parameter.parameter
         target.value = parameter.value
         targets.append(target)
-    
+
     session.commit()
 
     for updated_parameter in targets:
@@ -41,15 +43,13 @@ def patch_naive_config(session: Session, parameters:list[ParameterAddOrUpdate]):
     return targets
 
 
-def create_new_parameter(session: Session, parameters:list[ParameterAddOrUpdate]):
+def create_new_parameter(session: Session, parameters: list[ParameterAddOrUpdate]):
 
     created_parameters = []
 
     for parameter in parameters:
-        new_parameter = Caddyfile_parameter(
-            block=parameter.block,
-            parameter=parameter.parameter,
-            value=parameter.value
+        new_parameter = CaddyfileParameter(
+            block=parameter.block, parameter=parameter.parameter, value=parameter.value
         )
         session.add(new_parameter)
 
@@ -65,25 +65,22 @@ def create_new_parameter(session: Session, parameters:list[ParameterAddOrUpdate]
     return created_parameters
 
 
-def get_site_headers(session:Session):
+def get_site_headers(session: Session):
     headers = session.exec(select(Header)).all()
     if not headers:
         return None
-    
+
     return headers
 
-def create_new_headers(session: Session, headers:list[SiteAddOrUpdate]):
+
+def create_new_headers(session: Session, headers: list[SiteAddOrUpdate]):
     created_headers = []
 
     for header in headers:
-        new_header = Header(
-            domain=header.domain,
-            port=header.port
-        )
+        new_header = Header(domain=header.domain, port=header.port)
 
         session.add(new_header)
         created_headers.append(new_header)
-
 
     session.commit()
 
@@ -94,7 +91,8 @@ def create_new_headers(session: Session, headers:list[SiteAddOrUpdate]):
 
     return created_headers
 
-def patch_headers(session: Session, headers:list[SiteAddOrUpdate]):
+
+def patch_headers(session: Session, headers: list[SiteAddOrUpdate]):
 
     targets = []
 
@@ -102,11 +100,11 @@ def patch_headers(session: Session, headers:list[SiteAddOrUpdate]):
         target = session.get(Header, header.id)
         if not target:
             logger.warning(f"Header with id {header.id} not found, skipping")
-            continue;
+            continue
         target.domain = header.domain
         target.port = header.port
         targets.append(target)
-    
+
     session.commit()
 
     for updated_header in targets:

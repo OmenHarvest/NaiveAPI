@@ -9,11 +9,13 @@ class ParameterResponse(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class ParameterAddOrUpdate(BaseModel):
     id: int | None = None
     block: str
     parameter: str
     value: str
 
+
 class ConfigRaw(BaseModel):
-    caddyfile: str 
+    caddyfile: str
