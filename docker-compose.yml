@@ -8,5 +8,5 @@ services:
     env_file:
       - .env
     volumes:
-      - ./naiveapi/data.db:/app/data.db
+      - data.db:/app/data.db
     network_mode: host
