@@ -5,7 +5,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from database import init_db
 from routers import service, user, auth
-import services.naive_config_generator
+import services.http.naive_dialoge
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
