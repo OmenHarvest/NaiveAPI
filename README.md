@@ -7,10 +7,44 @@
 # 👋Introduction
 **NaiveAPI** is API Gateway for NaiveProxy based on FastAPI.
 
-
 # ☄️How To Install
 
+## Docker Compose
 
+Clone the repository and place it next to your `naive/` folder:
+
+/your/server/
+├── naive/
+│ └── data/
+│ └── Caddyfile
+└── naiveapi/
+├── docker-compose.yml
+└── .env
+
+Generate the `.env` file:
+
+```
+chmod +x env_generator.sh
+./env_generator.sh
+```
+
+The script automatically generates:
+- `CRYPTOGRAPHY_KEY` — Fernet encryption key for storing user passwords
+- `JWT_SECRET` — secret key for signing JWT tokens
+- `DEFAULT_SITE_PORT` — default port for site headers (443)
+- `NAIVE_PROXY` — Caddy Admin API URL (http://localhost:2019)
+- `JWT_ALGORITHM`, `JWT_EXPIRE_MINUTES`, `JWT_REFRESH_EXPIRE_DAYS` — JWT settings
+
+> [!IMPORTANT]
+> Keep your `.env` file safe. If `CRYPTOGRAPHY_KEY` is lost, all stored passwords become unrecoverable.
+
+Then start the container:
+
+```bash
+docker compose up -d
+```
+
+API will be available at `http://localhost:8000`.
 
 ## Database
 
