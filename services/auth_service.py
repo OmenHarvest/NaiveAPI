@@ -1,24 +1,24 @@
+import bcrypt
 from datetime import datetime, timedelta
 from os import getenv
 from jose import jwt, JWTError
-from passlib.context import CryptContext
 from sqlmodel import Session
 from models.admin_model import Admin
 from fastapi import HTTPException
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 SECRET = getenv("JWT_SECRET")
+if not SECRET:
+    raise RuntimeError("JWT_SECRET is not set in environment")
 ALGORITHM = getenv("JWT_ALGORITHM", "HS256")
 ACCESS_EXPIRE = int(getenv("JWT_EXPIRE_MINUTES", "30"))
 REFRESH_EXPIRE = int(getenv("JWT_REFRESH_EXPIRE_DAYS", "7"))
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return bcrypt.checkpw(plain.encode(), hashed.encode())
 
 def create_token(data: dict, expires_delta: timedelta) -> str:
     payload = data.copy()
