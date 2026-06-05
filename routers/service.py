@@ -4,7 +4,7 @@ from database import get_session
 from schemas.caddyfile_schema import ParameterResponse, ParameterAddOrUpdate
 from schemas.site_header_schema import SiteResponse, SiteAddOrUpdate
 
-from services.naive_service import get_naive_config, patch_naive_config, create_new_parameter, create_new_headers, patch_headers
+from services.naive_service import get_naive_config, patch_naive_config, create_new_parameter, create_new_headers, patch_headers, get_site_headers
 
 from services.naive_config_generator import get_naive_config
 from routers.auth import current_admin
@@ -33,7 +33,7 @@ def post_config(response:Response, parameters:list[ParameterAddOrUpdate], sessio
 
 @service.get("/config/site-header", response_model=list[SiteResponse])
 def get_site_headers(response:Response, session: Session = Depends(get_session), admin=Depends(current_admin)):
-    parameters = get_naive_config(session)
+    parameters = get_site_headers(session)
     if not parameters:
         return HTTPException(status_code=404, detail="headers is empty")
     response.code=200

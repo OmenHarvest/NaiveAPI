@@ -7,3 +7,4 @@ echo "NAIVE_PROXY=http://localhost:2019" >> .env
 echo "JWT_ALGORITHM=HS256" >> .env
 echo "JWT_EXPIRE_MINUTES=30" >> .env
 echo "JWT_REFRESH_EXPIRE_DAYS=7" >> .env
+echo "DATABASE_URL=sqlite:///./data/data.db" >> .env

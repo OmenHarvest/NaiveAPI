@@ -19,7 +19,6 @@ def get_naive_config(session:Session) -> str:
     forward_proxy_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='forward_proxy_parameter')).all()
     reverse_proxy_h = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='reverse_proxy_header')).all()
     reverse_proxy_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='reverse_proxy_parameter')).all()
-    print(reverse_proxy_h)
 
     picked_reverse_proxy_h = secrets.choice(reverse_proxy_h)
 

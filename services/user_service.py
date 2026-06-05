@@ -25,7 +25,6 @@ def export_user(login: str, session: Session):
     if not user:
         return None
 
-    emit("user.changed", session=session)
     return UserExportResponse(
         login=user.login,
         password=decrypt(user.password)
@@ -37,7 +36,7 @@ def edit_password_by_login(session:Session, data:UserCreateOrUpdate):
     if not user:
         return None
     
-    user.password = data.password
+    user.password = encrypt(data.password)
 
     session.add(user)
     session.commit()

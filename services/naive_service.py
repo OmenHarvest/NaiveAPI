@@ -84,7 +84,6 @@ def create_new_headers(session: Session, headers:list[SiteAddOrUpdate]):
         session.add(new_header)
         created_headers.append(new_header)
 
-    emit("config.changed", session=session)
 
     session.commit()
 
@@ -104,9 +103,8 @@ def patch_headers(session: Session, headers:list[SiteAddOrUpdate]):
         if not target:
             logger.warning(f"Header with id {header.id} not found, skipping")
             continue;
-        target.block = header.block
-        target.parameter = header.parameter
-        target.value = header.value
+        target.domain = header.domain
+        target.port = header.port
         targets.append(target)
     
     session.commit()
