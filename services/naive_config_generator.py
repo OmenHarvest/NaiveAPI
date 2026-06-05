@@ -1,4 +1,35 @@
 from sqlmodel import Session
+from string import Template
+from pathlib import Path
+
+from models.caddyfile_model import Caddyfile_parameter
+from models.site_header_model import Header
+from models.user_model import User
+
+from sqlmodel import select
+import secrets
+from encrypt_manager import decrypt
 
 def get_naive_config(session:Session) -> str:
-    pass
+    template = Template(Path("templates/caddyfile.template").read_text()) 
+
+    global_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='global_parameter')).all()
+    site_h = session.scalars(select(Header)).all()
+    users = session.scalars(select(User)).all()
+    forward_proxy_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='forward_proxy_parameter')).all()
+    reverse_proxy_h = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='reverse_proxy_header')).all()
+    reverse_proxy_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='reverse_proxy_parameter')).all()
+    print(reverse_proxy_h)
+
+    picked_reverse_proxy_h = secrets.choice(reverse_proxy_h)
+
+    result = template.safe_substitute(
+        gobal_parameters = "\n ".join(f"{p.parameter} {p.value}" for p in global_p),
+        site_headers = ", ".join(f"{h.domain}:{h.port}" for h in site_h),
+        users = "\n ".join(f"basic_auth {u.login} {decrypt(u.password)}" for u in users),
+        forward_proxy_parameters = "\n ".join(f"{p.parameter} {p.value}" for p in forward_proxy_p),
+        reverse_proxy_header = picked_reverse_proxy_h.value,
+        reverse_proxy_parameters = "\n ".join(f"{p.parameter} {p.value}" for p in reverse_proxy_p)
+    )
+
+    return result

@@ -5,10 +5,11 @@ from models.site_header_model import Header
 from schemas.caddyfile_schema import ParameterAddOrUpdate
 from schemas.site_header_schema import SiteAddOrUpdate
 
+from events_bus import emit
+
 import logging
 
 logger = logging.getLogger("uvicorn")
-
 
 def get_naive_config(session:Session):
     parameters = session.exec(select(Caddyfile_parameter)).all()
@@ -36,6 +37,7 @@ def patch_naive_config(session: Session, parameters:list[ParameterAddOrUpdate]):
     for updated_parameter in targets:
         session.refresh(updated_parameter)
 
+    emit("config.changed", session=session)
     return targets
 
 
@@ -57,6 +59,8 @@ def create_new_parameter(session: Session, parameters:list[ParameterAddOrUpdate]
 
     for param in created_parameters:
         session.refresh(param)
+
+    emit("config.changed", session=session)
 
     return created_parameters
 
@@ -80,10 +84,14 @@ def create_new_headers(session: Session, headers:list[SiteAddOrUpdate]):
         session.add(new_header)
         created_headers.append(new_header)
 
+    emit("config.changed", session=session)
+
     session.commit()
 
     for header in created_headers:
         session.refresh(header)
+
+    emit("config.changed", session=session)
 
     return created_headers
 
@@ -105,5 +113,7 @@ def patch_headers(session: Session, headers:list[SiteAddOrUpdate]):
 
     for updated_header in targets:
         session.refresh(updated_header)
+
+    emit("config.changed", session=session)
 
     return targets

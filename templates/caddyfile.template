@@ -1,0 +1,18 @@
+{
+  $gobal_parameters
+}
+
+$site_headers {
+  $site_parameters
+
+  route {
+    forward_proxy {
+        $users
+        $forward_proxy_parameters
+    }
+
+    reverse_proxy $reverse_proxy_header {
+      $reverse_proxy_parameters
+    }
+  }
+}

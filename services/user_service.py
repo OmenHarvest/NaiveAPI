@@ -4,6 +4,8 @@ from schemas.user_schema import UserCreateOrUpdate, UserExportResponse
 
 from encrypt_manager import encrypt, decrypt
 
+from events_bus import emit
+
 def get_all_users(sesson:Session) -> list[User]:
     return sesson.exec(select(User)).all()
     
@@ -14,6 +16,7 @@ def create_user(session:Session, data:UserCreateOrUpdate):
     session.commit()
     session.refresh(user)
     
+    emit("user.changed", session=session)
     return user
 
 def export_user(login: str, session: Session):
@@ -22,6 +25,7 @@ def export_user(login: str, session: Session):
     if not user:
         return None
 
+    emit("user.changed", session=session)
     return UserExportResponse(
         login=user.login,
         password=decrypt(user.password)
@@ -40,6 +44,7 @@ def edit_password_by_login(session:Session, data:UserCreateOrUpdate):
 
     session.refresh(user)
 
+    emit("user.changed", session=session)
     return user
 
 def delete_user_by_login(session: Session, login: str) -> bool:
@@ -48,4 +53,5 @@ def delete_user_by_login(session: Session, login: str) -> bool:
         return False
     session.delete(user)
     session.commit()
+    emit("user.changed", session=session)
     return True

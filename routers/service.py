@@ -6,6 +6,8 @@ from schemas.site_header_schema import SiteResponse, SiteAddOrUpdate
 
 from services.naive_service import get_naive_config, patch_naive_config, create_new_parameter, create_new_headers, patch_headers
 
+from services.naive_config_generator import get_naive_config
+
 service = APIRouter(prefix="/service", tags=["service"])
 
 @service.get("/config", response_model=list[ParameterResponse])
@@ -46,3 +48,7 @@ def post_site_headers(response:Response, headers:list[SiteAddOrUpdate], session:
 def patch_config(response:Response, headers:list[SiteAddOrUpdate], session: Session = Depends(get_session)):
     response.status_code=200
     return patch_headers(headers=headers, session=session)
+
+@service.get("/config/raw")
+def get_raw_config(response:Response, session: Session = Depends(get_session)):
+    return get_naive_config(session=session)
