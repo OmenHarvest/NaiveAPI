@@ -4,3 +4,4 @@ sqlmodel
 cryptography
 psycopg2-binary
 pymysql
+httpx
