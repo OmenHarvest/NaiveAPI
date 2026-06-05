@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, create_engine, Session
 from os import getenv
 
+import models.caddyfile_model, models.user_model, models.site_header_model, models.admin_model
+
 DATABASE_URL = getenv("DATABASE_URL", "sqlite:///./data.db")
 
 engine = create_engine(

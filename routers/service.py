@@ -5,15 +5,14 @@ from schemas.caddyfile_schema import ParameterResponse, ParameterAddOrUpdate
 from schemas.site_header_schema import SiteResponse, SiteAddOrUpdate
 
 from services.naive_service import (
-    get_naive_config,
+    get_naive_config as get_naive_config_list,
     patch_naive_config,
     create_new_parameter,
     create_new_headers,
     patch_headers,
     get_site_headers,
 )
-
-from services.naive_config_generator import get_naive_config
+from services.naive_config_generator import get_naive_config as generate_caddyfile
 from routers.auth import current_admin
 
 service = APIRouter(prefix="/service", tags=["service"])
@@ -25,10 +24,10 @@ def get_config(
     session: Session = Depends(get_session),
     admin=Depends(current_admin),
 ):
-    parameters = get_naive_config(session)
+    parameters = get_naive_config_list(session)
     if not parameters:
-        return HTTPException(status_code=404, detail="Config is empty")
-    response.code = 200
+        raise HTTPException(status_code=404, detail="Config is empty")
+    response.status_code = 200
     return parameters
 
 
@@ -65,8 +64,8 @@ def get_site_headers(
 ):
     parameters = get_site_headers(session)
     if not parameters:
-        return HTTPException(status_code=404, detail="headers is empty")
-    response.code = 200
+        raise HTTPException(status_code=404, detail="headers is empty")
+    response.status_code = 200
     return parameters
 
 
@@ -98,4 +97,4 @@ def get_raw_config(
     session: Session = Depends(get_session),
     admin=Depends(current_admin),
 ):
-    return get_naive_config(session=session)
+    return generate_caddyfile(session=session)
