@@ -8,20 +8,6 @@
 
 # ☄️How To Install
 
-## Docker
-First, let's install Naive using a Compose file. 
-
-> [!WARNING]
-> Whether you're using Docker or installing Naive natively, there's no need to change Caddy's settings via the Caddyfile, since NaiveAPI will apply its own settings as soon as it gains access
-
-```
-services:
-  naiveproxy:
-    image: pocat/naiveproxy:latest
-    container_name: naiveproxy
-    restart: unless-stopped
-    network_mode: host
-```
 
 ## Database
 
@@ -49,12 +35,16 @@ services:
 | POST   | /users                | Create user                      |
 | PATCH  | /users/{login}        | Update user password             |
 | DELETE | /users/{login}        | Delete user                      |
-| GET    | /users/{login}/export | Get connection links and config  |
+| GET    | /users/{login}        | Get connection links and config  |
 
 ## Naive Services
+
+> [!WARNING]
+> To modify a site block (I mean the block itself, not its attributes), use the "site-header" identifier instead of the standard "site" identifier, which is used for this block's parameters
 
 | Method | Endpoint              | Description                      |
 | ------ | --------------------- | -------------------------------- |
 | GET    | /service/config       | Get current Caddy config         |
-| PATCH  | /service/config       | Update a single config parameter |
-| POST   | /service/config/raw   | Apply raw Caddyfile              |
+| PATCH  | /service/config       | Update a config parameters.      |
+| POST   | /service/config       | Create a config parameters.      |
+
