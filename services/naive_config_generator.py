@@ -2,7 +2,7 @@ from sqlmodel import Session
 from string import Template
 from pathlib import Path
 
-from models.caddyfile_model import Caddyfile_parameter
+from models.caddyfile_model import CaddyfileParameter
 from models.site_header_model import Header
 from models.user_model import User
 
@@ -15,28 +15,28 @@ def get_naive_config(session: Session) -> str:
     template = Template(Path("templates/caddyfile.template").read_text())
 
     global_p = session.scalars(
-        select(Caddyfile_parameter).where(
-            Caddyfile_parameter.block == "global_parameter"
+        select(CaddyfileParameter).where(
+            CaddyfileParameter.block == "global_parameter"
         )
     ).all()
     site_h = session.scalars(select(Header)).all()
     site_p = session.scalars(
-        select(Caddyfile_parameter).where(Caddyfile_parameter.block == "site_parameter")
+        select(CaddyfileParameter).where(CaddyfileParameter.block == "site_parameter")
     ).all()
     users = session.scalars(select(User)).all()
     forward_proxy_p = session.scalars(
-        select(Caddyfile_parameter).where(
-            Caddyfile_parameter.block == "forward_proxy_parameter"
+        select(CaddyfileParameter).where(
+            CaddyfileParameter.block == "forward_proxy_parameter"
         )
     ).all()
     reverse_proxy_h = session.scalars(
-        select(Caddyfile_parameter).where(
-            Caddyfile_parameter.block == "reverse_proxy_header"
+        select(CaddyfileParameter).where(
+            CaddyfileParameter.block == "reverse_proxy_header"
         )
     ).all()
     reverse_proxy_p = session.scalars(
-        select(Caddyfile_parameter).where(
-            Caddyfile_parameter.block == "reverse_proxy_parameter"
+        select(CaddyfileParameter).where(
+            CaddyfileParameter.block == "reverse_proxy_parameter"
         )
     ).all()
 

@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from models.caddyfile_model import Caddyfile_parameter
+from models.caddyfile_model import CaddyfileParameter
 from models.site_header_model import Header
 
 from schemas.caddyfile_schema import ParameterAddOrUpdate
@@ -13,7 +13,7 @@ logger = logging.getLogger("uvicorn")
 
 
 def get_naive_config(session: Session):
-    parameters = session.exec(select(Caddyfile_parameter)).all()
+    parameters = session.exec(select(CaddyfileParameter)).all()
     if not parameters:
         return None
 
@@ -25,7 +25,7 @@ def patch_naive_config(session: Session, parameters: list[ParameterAddOrUpdate])
     targets = []
 
     for parameter in parameters:
-        target = session.get(Caddyfile_parameter, parameter.id)
+        target = session.get(CaddyfileParameter, parameter.id)
         if not target:
             logger.warning(f"Parameter with id {parameter.id} not found, skipping")
             continue
@@ -48,7 +48,7 @@ def create_new_parameter(session: Session, parameters: list[ParameterAddOrUpdate
     created_parameters = []
 
     for parameter in parameters:
-        new_parameter = Caddyfile_parameter(
+        new_parameter = CaddyfileParameter(
             block=parameter.block, parameter=parameter.parameter, value=parameter.value
         )
         session.add(new_parameter)
