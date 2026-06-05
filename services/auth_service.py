@@ -17,30 +17,34 @@ REFRESH_EXPIRE = int(getenv("JWT_REFRESH_EXPIRE_DAYS", "7"))
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
+
 def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode(), hashed.encode())
+
 
 def create_token(data: dict, expires_delta: timedelta) -> str:
     payload = data.copy()
     payload["exp"] = datetime.utcnow() + expires_delta
     return jwt.encode(payload, SECRET, algorithm=ALGORITHM)
 
+
 def create_tokens(login: str) -> dict:
     access = create_token(
-        {"sub": login, "role": "admin"},
-        timedelta(minutes=ACCESS_EXPIRE)
+        {"sub": login, "role": "admin"}, timedelta(minutes=ACCESS_EXPIRE)
     )
     refresh = create_token(
         {"sub": login, "role": "admin", "type": "refresh"},
-        timedelta(days=REFRESH_EXPIRE)
+        timedelta(days=REFRESH_EXPIRE),
     )
     return {"access_token": access, "refresh_token": refresh, "token_type": "bearer"}
+
 
 def login(session: Session, login: str, password: str) -> dict:
     admin = session.get(Admin, login)
     if not admin or not verify_password(password, admin.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return create_tokens(login)
+
 
 def refresh(token: str) -> dict:
     try:
@@ -50,6 +54,7 @@ def refresh(token: str) -> dict:
         return create_tokens(payload["sub"])
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
 
 def get_current_admin(token: str) -> dict:
     try:

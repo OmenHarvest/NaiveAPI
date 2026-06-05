@@ -6,4 +6,3 @@ class Caddyfile_parameter(SQLModel, table=True):
     block: str
     parameter: str
     value: str
-
