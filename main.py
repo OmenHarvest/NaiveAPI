@@ -7,8 +7,6 @@ from database import init_db
 from routers import service, user, auth
 import services.naive_config_generator
 
-from slowapi
-
 limiter = Limiter(key=)
 
 @asynccontextmanager
