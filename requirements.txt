@@ -6,6 +6,6 @@ psycopg2-binary
 pymysql
 httpx
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt
 python-dotenv
 slowapi

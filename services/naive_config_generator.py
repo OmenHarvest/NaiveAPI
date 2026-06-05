@@ -15,6 +15,7 @@ def get_naive_config(session:Session) -> str:
 
     global_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='global_parameter')).all()
     site_h = session.scalars(select(Header)).all()
+    site_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='site_parameter')).all()
     users = session.scalars(select(User)).all()
     forward_proxy_p = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='forward_proxy_parameter')).all()
     reverse_proxy_h = session.scalars(select(Caddyfile_parameter).where(Caddyfile_parameter.block=='reverse_proxy_header')).all()
@@ -25,6 +26,7 @@ def get_naive_config(session:Session) -> str:
     result = template.safe_substitute(
         gobal_parameters = "\n ".join(f"{p.parameter} {p.value}" for p in global_p),
         site_headers = ", ".join(f"{h.domain}:{h.port}" for h in site_h),
+        site_parameters="\n  ".join(f"{p.parameter} {p.value}".strip() for p in site_p),
         users = "\n ".join(f"basic_auth {u.login} {decrypt(u.password)}" for u in users),
         forward_proxy_parameters = "\n ".join(f"{p.parameter} {p.value}" for p in forward_proxy_p),
         reverse_proxy_header = picked_reverse_proxy_h.value,
