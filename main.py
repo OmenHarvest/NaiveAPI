@@ -20,10 +20,10 @@ import services.http.naive_dialoge
 async def lifespan(app: FastAPI):
     init_db()
     task = asyncio.create_task(caddy_sync_loop(session_factory))
-    await asyncio.sleep(0)  # отдаём управление event loop
+    await asyncio.sleep(0)
     yield
     task.cancel()
-    
+
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(lifespan=lifespan)
