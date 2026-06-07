@@ -32,13 +32,15 @@ def _is_caddy_available() -> bool:
 
 async def caddy_sync_loop(session_factory):
     while True:
+        print(f"TICK dirty={state.config_dirty} caddy={_is_caddy_available()}", flush=True)
         if state.config_dirty and _is_caddy_available():
             try:
                 with session_factory() as session:
                     _do_reload(session)
                 state.config_dirty = False
-            except Exception:
-                pass
+                print("RELOAD OK", flush=True)
+            except Exception as e:
+                print(f"RELOAD FAILED: {e}", flush=True)
         await asyncio.sleep(5)
 
 
