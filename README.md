@@ -2,16 +2,23 @@
   <img width="200" height="200" alt="logo" src="https://github.com/user-attachments/assets/9675e185-d7fb-44b8-9db8-17cb40a42846" />
 </div>
 
+# 👋 Introduction
+**NaiveAPI** is an API Gateway for NaiveProxy based on FastAPI.
 
-
-# 👋Introduction
-**NaiveAPI** is API Gateway for NaiveProxy based on FastAPI.
-
-# ☄️How To Install
+# ☄️ How To Install
 
 ## Docker Compose
 
-Clone the repository and place it next to your `naive/` folder
+Clone the repository and place it next to your `naive/` folder:
+
+```
+.
+├── naive/
+│   └── users.conf
+└── NaiveAPI/
+    ├── docker-compose.yml
+    └── ...
+```
 
 Generate the `.env` file:
 
@@ -20,17 +27,15 @@ chmod +x env_generator.sh
 ./env_generator.sh
 ```
 
-The script automatically generates:
-- `CRYPTOGRAPHY_KEY` — Fernet encryption key for storing user passwords
-- `JWT_SECRET` — secret key for signing JWT tokens
-- `DEFAULT_SITE_PORT` — default port for site headers (443)
-- `NAIVE_PROXY` — Caddy Admin API URL (http://localhost:2019)
-- `JWT_ALGORITHM`, `JWT_EXPIRE_MINUTES`, `JWT_REFRESH_EXPIRE_DAYS` — JWT settings
+The script generates:
+- `CRYPTOGRAPHY_KEY` — Fernet key for encrypting user passwords
+- `AUTH_INIT_ENDPOINT_RATELIMIT_TPM` — rate limit for `/auth/init` (requests per minute)
+- `AUTH_ENDPOINT_RATELIMIT_TPM` — rate limit for all other auth endpoints (requests per minute)
 
 > [!IMPORTANT]
 > Keep your `.env` file safe. If `CRYPTOGRAPHY_KEY` is lost, all stored passwords become unrecoverable.
 
-Then start the container:
+Start the container:
 
 ```bash
 docker compose up -d
@@ -40,50 +45,71 @@ API will be available at `http://localhost:8000`.
 
 ## Database
 
-| Database | URL prefix | Driver | Notes |
-|----------|------------|--------|-------|
-| SQLite | `sqlite:///./data.db` | built-in | default, no setup required |
+| Database | `DATABASE_URL` | Driver | Notes |
+|----------|----------------|--------|-------|
+| SQLite | `sqlite:///data.db` | built-in | default, no setup required |
 | PostgreSQL | `postgresql://user:pass@host/db` | `psycopg2-binary` | recommended for production |
 | MySQL | `mysql+pymysql://user:pass@host/db` | `pymysql` | |
 | MariaDB | `mariadb+pymysql://user:pass@host/db` | `pymysql` | |
 
+# 🔐 Authentication
 
-# 🔐Authentication
+NaiveAPI uses API keys passed via the `X-API-Key` header.
 
-NaiveAPI uses JWT for authentication. All endpoints except `/auth/login` require a valid access token.
+There are two key types:
 
-Include the token in every request:
+| Type | Capabilities |
+|------|-------------|
+| Master key | Manage API keys (create, deactivate, delete, rotate) |
+| Regular key | Access all other endpoints (users, config) |
+
+## Initial Setup
+
+On a fresh install, no keys exist. Generate the master key once:
 
 ```http
-Authorization: Bearer eyJ...
+POST /auth/init
 ```
 
-| Token | Lifetime |
-|-------|----------|
-| Access token | 30 minutes |
-| Refresh token | 7 days |
+Returns the master key — **save it**, it won't be shown again.
 
+Then use the master key to generate regular keys for day-to-day use:
 
-# 🎯Endpoints
+```http
+POST /auth/keys
+X-API-Key: <master_key>
 
+{"name": "my-key"}
+```
+
+Include the key in every subsequent request:
+
+```http
+X-API-Key: <your_key>
+```
+
+# 🎯 Endpoints
 
 ## Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /auth/login | Obtain JWT token |
-| POST | /auth/refresh | Refresh access token |
 
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/auth/init` | — | Generate master key (once) |
+| POST | `/auth/keys` | Master | Generate a new API key |
+| GET | `/auth/keys` | Master | List all API keys |
+| PATCH | `/auth/keys/{id}/deactivate` | Master | Deactivate an API key |
+| DELETE | `/auth/keys` | Master | Delete deactivated API keys |
+| POST | `/auth/rotate-master-key` | Master | Rotate the master key |
 
 ## User Management
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /users | List all users |
-| POST | /users | Create user |
-| PATCH | /users | Update user |
-| DELETE | /users/{login} | Delete user |
-| GET | /users/{login} | Get login and decrypted password |
-
+| GET | `/users/` | List all users |
+| POST | `/users/` | Create a user |
+| PATCH | `/users/` | Update user password |
+| DELETE | `/users/{login}` | Delete a user |
+| GET | `/users/{login}` | Get login and decrypted password |
 
 ## Naive Service
 
@@ -91,14 +117,14 @@ Authorization: Bearer eyJ...
 > To modify site domains and ports use `/service/config/site-header` endpoints, not `/service/config`.
 
 > [!NOTE]
-> Available `block` values: `global_parameter`, `forward_proxy_parameter`, `reverse_proxy_header`, `reverse_proxy_parameter`
+> Available `block` values for `/service/config`: `global_parameter`, `site_parameter`, `forward_proxy_parameter`, `reverse_proxy_header`, `reverse_proxy_parameter`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /service/config | Get all config parameters |
-| POST | /service/config | Create config parameters |
-| PATCH | /service/config | Update config parameters |
-| GET | /service/config/site-header | Get site domains |
-| POST | /service/config/site-header | Add site domain |
-| DELETE | /service/config/site-header/{id} | Remove site domain |
-| GET | /service/config/raw | Get generated Caddyfile as plain text |
+| GET | `/service/config` | List all config parameters |
+| POST | `/service/config` | Create config parameters |
+| PATCH | `/service/config` | Update config parameters |
+| GET | `/service/config/site-header` | List site domains |
+| POST | `/service/config/site-header` | Add site domain |
+| PATCH | `/service/config/site-header` | Update site domain |
+| GET | `/service/config/raw` | Get generated Caddyfile as plain text |
