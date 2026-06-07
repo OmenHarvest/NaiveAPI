@@ -22,7 +22,7 @@ def _do_reload(session: Session):
 def _is_caddy_available() -> bool:
     try:
         httpx.get(
-            f"{getenv('NAIVE_PROXY', 'http://localhost:2019')}/config",
+            f"{getenv('NAIVE_PROXY', 'http://localhost:2019')}/config/",
             timeout=2.0,
         ).raise_for_status()
         return True
