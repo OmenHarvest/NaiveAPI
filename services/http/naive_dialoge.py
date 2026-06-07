@@ -26,7 +26,8 @@ def _is_caddy_available() -> bool:
             timeout=2.0,
         ).raise_for_status()
         return True
-    except (httpx.ConnectError, httpx.HTTPStatusError, httpx.TimeoutException):
+    except (httpx.ConnectError, httpx.HTTPStatusError, httpx.TimeoutException) as e:
+        print(e, flush=True)
         return False
 
 
