@@ -5,7 +5,7 @@ load_dotenv()
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from database import init_db
-from routers import service, user
+from routers import auth, service, user
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -27,3 +27,4 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(service.service)
 app.include_router(user.role)
+app.include_router(auth.auth)
