@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, Response, HTTPException
+from fastapi import APIRouter, Depends, Response, HTTPException, Security
 from sqlmodel import Session
 from database import get_session
 from schemas.user_schema import UserResponse, UserCreateOrUpdate, UserExportResponse
+from services.auth_service import API_KEY_HEADER, verify_api_key
 from services.user_service import get_all_users as get_all_users_from_service
 from services.user_service import create_user as create_user_from_service
 from services.user_service import export_user as export_user_from_service
@@ -12,8 +13,6 @@ from services.user_service import (
     delete_user_by_login as delete_user_by_login_from_service,
 )
 
-from routers.auth import current_admin
-
 role = APIRouter(prefix="/users", tags=["user"])
 # Role editor
 
@@ -22,8 +21,9 @@ role = APIRouter(prefix="/users", tags=["user"])
 def get_all_users(
     response: Response,
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    key: str = Security(API_KEY_HEADER)
 ):
+    verify_api_key(session, key)
     all_users = get_all_users_from_service(sesson=session)
     if not all_users:
         return Response(status_code=204)
@@ -37,8 +37,9 @@ def create_user(
     user: UserCreateOrUpdate,
     response: Response,
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    key: str = Security(API_KEY_HEADER)
 ):
+    verify_api_key(session, key)
     return create_user_from_service(session, user)
 
 
@@ -47,16 +48,19 @@ def edit_user_password_by_login(
     user: UserCreateOrUpdate,
     response: Response,
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    key: str = Security(API_KEY_HEADER)
 ):
+    verify_api_key(session, key)
     response.status_code = 200
     return edit_password_by_login_from_service(data=user, session=session)
 
 
 @role.delete("/{login}")
 def delete_user_by_login(
-    login: str, session: Session = Depends(get_session), admin=Depends(current_admin)
+    login: str, session: Session = Depends(get_session),
+    key: str = Security(API_KEY_HEADER)
 ):
+    verify_api_key(session, key)
     deleted = delete_user_by_login_from_service(session=session, login=login)
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")
@@ -65,8 +69,10 @@ def delete_user_by_login(
 
 @role.get("/{login}", response_model=UserExportResponse)
 def get_connection_data_by_login(
-    login: str, session: Session = Depends(get_session), admin=Depends(current_admin)
+    login: str, session: Session = Depends(get_session),
+    key: str = Security(API_KEY_HEADER)
 ):
+    verify_api_key(session, key)
     result = export_user_from_service(login=login, session=session)
     if result is None:
         raise HTTPException(status_code=404, detail="User not found")
