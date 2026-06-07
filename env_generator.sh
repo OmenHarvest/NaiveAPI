@@ -8,3 +8,4 @@ echo "" >> .env
 echo "AUTH_INIT_ENDPOINT_RATELIMIT_TPM=5" >> .env
 echo "AUTH_ENDPOINT_RATELIMIT_TPM=10" >> .env
 echo "CRYPTOGRAPHY_KEY=$(python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')" >> .env
+echo "RESET_MASTER_KEY_ON_STARTUP=false" >> .env

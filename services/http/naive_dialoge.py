@@ -27,22 +27,20 @@ def _is_caddy_available() -> bool:
         ).raise_for_status()
         return True
     except (httpx.ConnectError, httpx.HTTPStatusError, httpx.TimeoutException) as e:
+        logger.error(f"Caddy is not avalable: {e}")
         state.config_dirty = True
-        print(e, flush=True)
         return False
 
 
 async def caddy_sync_loop(session_factory):
     while True:
-        print(f"TICK dirty={state.config_dirty} caddy={_is_caddy_available()}", flush=True)
         if state.config_dirty and _is_caddy_available():
             try:
                 with session_factory() as session:
                     _do_reload(session)
                 state.config_dirty = False
-                print("RELOAD OK", flush=True)
-            except Exception as e:
-                print(f"RELOAD FAILED: {e}", flush=True)
+            except Exception:
+                pass
         await asyncio.sleep(5)
 
 
@@ -53,5 +51,5 @@ def reload_caddy(session: Session):
     try:
         _do_reload(session)
         state.config_dirty = False
-    except (ValueError, httpx.ConnectError, httpx.HTTPStatusError):
-        pass
+    except (ValueError, httpx.ConnectError, httpx.HTTPStatusError) as e:
+        logger.error(f"Error occurred while reloading Caddy: {e}")

@@ -58,7 +58,6 @@ def post_config(
 
 # headers
 
-
 @service.get("/config/site-header", response_model=list[SiteResponse])
 def get_site_headers_handler(
     response: Response,
