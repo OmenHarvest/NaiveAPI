@@ -9,16 +9,7 @@
 
 ## Docker Compose
 
-Clone the repository and place it next to your `naive/` folder:
-
-```
-.
-├── naive/
-│   └── users.conf
-└── NaiveAPI/
-    ├── docker-compose.yml
-    └── ...
-```
+Clone the repository
 
 Generate the `.env` file:
 
