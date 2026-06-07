@@ -12,8 +12,6 @@ from services.user_service import (
     delete_user_by_login as delete_user_by_login_from_service,
 )
 
-from routers.auth import current_admin
-
 role = APIRouter(prefix="/users", tags=["user"])
 # Role editor
 
@@ -21,8 +19,7 @@ role = APIRouter(prefix="/users", tags=["user"])
 @role.get("/", response_model=list[UserResponse])
 def get_all_users(
     response: Response,
-    session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    session: Session = Depends(get_session)
 ):
     all_users = get_all_users_from_service(sesson=session)
     if not all_users:
@@ -36,8 +33,7 @@ def get_all_users(
 def create_user(
     user: UserCreateOrUpdate,
     response: Response,
-    session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    session: Session = Depends(get_session)
 ):
     return create_user_from_service(session, user)
 
@@ -46,8 +42,7 @@ def create_user(
 def edit_user_password_by_login(
     user: UserCreateOrUpdate,
     response: Response,
-    session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    session: Session = Depends(get_session)
 ):
     response.status_code = 200
     return edit_password_by_login_from_service(data=user, session=session)
@@ -55,7 +50,7 @@ def edit_user_password_by_login(
 
 @role.delete("/{login}")
 def delete_user_by_login(
-    login: str, session: Session = Depends(get_session), admin=Depends(current_admin)
+    login: str, session: Session = Depends(get_session)
 ):
     deleted = delete_user_by_login_from_service(session=session, login=login)
     if not deleted:
@@ -65,7 +60,7 @@ def delete_user_by_login(
 
 @role.get("/{login}", response_model=UserExportResponse)
 def get_connection_data_by_login(
-    login: str, session: Session = Depends(get_session), admin=Depends(current_admin)
+    login: str, session: Session = Depends(get_session)
 ):
     result = export_user_from_service(login=login, session=session)
     if result is None:

@@ -13,7 +13,6 @@ from services.naive_service import (
     get_site_headers,
 )
 from services.naive_config_generator import get_naive_config as generate_caddyfile
-from routers.auth import current_admin
 
 service = APIRouter(prefix="/service", tags=["service"])
 
@@ -22,7 +21,6 @@ service = APIRouter(prefix="/service", tags=["service"])
 def get_config(
     response: Response,
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
 ):
     parameters = get_naive_config_list(session)
     if not parameters:
@@ -35,8 +33,7 @@ def get_config(
 def patch_config(
     response: Response,
     parameters: list[ParameterAddOrUpdate],
-    session: Session = Depends(get_session),
-    admin=Depends(current_admin),
+    session: Session = Depends(get_session)
 ):
     response.status_code = 200
     return patch_naive_config(parameters=parameters, session=session)
@@ -47,7 +44,6 @@ def post_config(
     response: Response,
     parameters: list[ParameterAddOrUpdate],
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
 ):
     response.status_code = 200
     return create_new_parameter(parameters=parameters, session=session)
@@ -60,7 +56,6 @@ def post_config(
 def get_site_headers_handler(
     response: Response,
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
 ):
     parameters = get_site_headers(session)
     if not parameters:
@@ -74,7 +69,6 @@ def post_site_headers(
     response: Response,
     headers: list[SiteAddOrUpdate],
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
 ):
     response.status_code = 200
     return create_new_headers(headers=headers, session=session)
@@ -85,7 +79,6 @@ def patch_site_headers(
     response: Response,
     headers: list[SiteAddOrUpdate],
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
 ):
     response.status_code = 200
     return patch_headers(headers=headers, session=session)
@@ -95,6 +88,5 @@ def patch_site_headers(
 def get_raw_config(
     response: Response,
     session: Session = Depends(get_session),
-    admin=Depends(current_admin),
 ):
     return generate_caddyfile(session=session)
