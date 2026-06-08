@@ -27,7 +27,7 @@ def get_config(
     verify_api_key(session, key)
     parameters = get_naive_config_list(session)
     if not parameters:
-        raise HTTPException(status_code=404, detail="Config is empty")
+        raise HTTPException(status_code=404, detail="Cannot generate config: config has critical errors with important arguments")
     response.status_code = 200
     return parameters
 

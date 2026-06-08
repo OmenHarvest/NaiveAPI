@@ -10,6 +10,9 @@ from sqlmodel import select
 import secrets
 from encrypt_manager import decrypt
 
+import logging
+logger = logging.getLogger("uvicorn")
+
 
 def get_naive_config(session: Session) -> str:
     template = Template(Path("templates/caddyfile.template").read_text())
@@ -41,7 +44,8 @@ def get_naive_config(session: Session) -> str:
     ).all()
 
     if not reverse_proxy_h:
-        raise ValueError("No reverse_proxy_header entries found in config")
+        logger.warning("reverse proxy header not found in config")
+        return
     picked_reverse_proxy_h = secrets.choice(reverse_proxy_h)
 
     result = template.safe_substitute(
